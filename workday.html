@@ -320,7 +320,14 @@
         // 日期变更实时触发
         function onDateChange() {
             loadDateData();
+            // 切换日期时隐藏并清空汇总表，避免显示过期数据
+            hideAndClearSummary();
+        }
+
+        // 隐藏并清空汇总表
+        function hideAndClearSummary() {
             document.getElementById("summaryContainer").classList.remove("active");
+            document.getElementById("summaryTbody").innerHTML = "";
         }
 
         // 加载指定日期的数据
@@ -366,7 +373,6 @@
                 
                 suppFields.forEach(key => {
                     const val = pData[key] !== undefined ? pData[key] : "";
-                    // 统一改为用户要求的提示语
                     const placeholder = "有则填写，无则不用填写";
                     
                     html2 += `<td contenteditable="true" data-placeholder="${placeholder}" data-date="${date}" data-person="${person}" data-field="${key}" data-table="supplement" oninput="handleInput(this)">${val}</td>`;
@@ -448,7 +454,7 @@
             document.getElementById("summaryContainer").scrollIntoView({ behavior: 'smooth' });
         }
 
-        // 清空当前日期数据
+        // 清空当前日期数据（同时清空汇总表）
         function clearCurrentDate() {
             const date = dateInput.value;
             if (!date) return;
@@ -463,7 +469,9 @@
             if (cleared) {
                 saveAllData(allData);
                 loadDateData();
-                alert(`已清空 ${date} 的所有数据。`);
+                // 同步清空并隐藏汇总表
+                hideAndClearSummary();
+                alert(`已清空 ${date} 的所有数据，汇总统计也已重置。`);
             } else {
                 alert(`没有找到 ${date} 的填报数据。`);
             }
